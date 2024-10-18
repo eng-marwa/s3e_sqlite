@@ -64,13 +64,14 @@ class _ViewNotesScreenState extends State<ViewNotesScreen> {
             child: ListView.builder(
                 itemCount: _list.length,
                 itemBuilder: (context, index) => Dismissible(
-                    onDismissed: (direction) {
+                    direction: DismissDirection.horizontal,
+                    confirmDismiss: (direction) async {
                       if (direction == DismissDirection.startToEnd) {
                         _deleteNote(_list[index].noteId!);
                       } else {
-                        print('Edit');
                         _showUpdateDialog(_list[index]);
                       }
+                      return true;
                     },
                     background: Container(
                         margin: EdgeInsets.all(16.r),
@@ -180,7 +181,10 @@ class _ViewNotesScreenState extends State<ViewNotesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: ColorManager.primaryColor,
-        title: Text('Update Notw'),
+        title: Text(
+          'Update Note',
+          style: TextStyles.title,
+        ),
         content: Form(
             key: _editKey,
             child: Column(
@@ -200,7 +204,8 @@ class _ViewNotesScreenState extends State<ViewNotesScreen> {
             )),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel')),
           TextButton(
               onPressed: () {
                 if (_editKey.currentState!.validate()) {
