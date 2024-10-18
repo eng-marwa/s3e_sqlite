@@ -18,8 +18,24 @@ class Crud {
   }
 
 //select
+  Future<List<Note>> select() async {
+    Database db = await DbHelper.helper.getDbInstance();
+    List<Map<String, dynamic>> result = await db.query(Constant.tableName,
+        distinct: true, orderBy: '${Constant.colDate} desc');
+    return result.map((e) => Note.fromMap(e)).toList();
+  }
 
 //update
+  Future<int> update(Note note) async {
+    Database db = await DbHelper.helper.getDbInstance();
+    return db.update(Constant.tableName, note.toMap(),
+        where: '${Constant.colId}=?', whereArgs: [note.noteId!]);
+  }
 
 //delete
+  Future<int> delete(int id) async {
+    Database db = await DbHelper.helper.getDbInstance();
+    return db.delete(Constant.tableName,
+        where: '${Constant.colId}=?', whereArgs: [id]);
+  }
 }

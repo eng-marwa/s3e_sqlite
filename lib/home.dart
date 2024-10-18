@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:s3e_sqlite/core/color_manager.dart';
+import 'package:s3e_sqlite/core/text_styles.dart';
 import 'package:s3e_sqlite/model/note.dart';
 import 'package:s3e_sqlite/utils/context_extension.dart';
 import 'package:s3e_sqlite/utils/date_time_manager.dart';
+import 'package:s3e_sqlite/view_notes_screen.dart';
+import 'package:s3e_sqlite/widgets/new_note_app_bar.dart';
 import 'package:s3e_sqlite/widgets/note_input_widget.dart';
 import 'data/crud.dart';
 
@@ -16,7 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _key = GlobalKey();
   late TextEditingController _titleController;
   late TextEditingController _textController;
-  bool _secure = true;
+  int _colorIndex = 2;
 
   @override
   void initState() {
@@ -40,48 +45,73 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: NewNoteAppBar(child: Text('Note'), callback: () => _addNewNote()),
+      backgroundColor: ColorManager.primaryColor,
       body: SafeArea(
           child: SingleChildScrollView(
         child: Column(
           children: [
-            const Text(
-              'Note App',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 30),
-            ),
             const SizedBox(
               height: 8,
             ),
             Form(
                 key: _key,
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0.r),
                   child: Column(
                     children: [
                       NoteInput(
                         controller: _titleController,
-                        label: 'Note Title',
+                        label: 'Title',
                         maxLines: 1,
+                        textStyles: TextStyles.noteTitleLabel,
                       ),
                       const SizedBox(
                         height: 16,
                       ),
-                      NoteInput(controller: _textController, label: 'Note Text')
+                      NoteInput(
+                        textStyles: TextStyles.noteTextLabel,
+                        controller: _textController,
+                        label: 'Type something...',
+                      )
                     ],
                   ),
                 )),
             const SizedBox(
               height: 8,
             ),
-            ElevatedButton(
-                onPressed: () {
-                  if (_key.currentState!.validate()) {
-                    _saveNote(Note(
-                        noteTitle: _titleController.value.text,
-                        noteText: _textController.value.text,
-                        createdAt: DateTimeManager.getCurrentDateTime()));
-                  }
-                },
-                child: Text('Add Note'))
+            Padding(
+              padding: EdgeInsets.all(8.0.r),
+              child: SizedBox(
+                height: 60.h,
+                width: double.infinity,
+                child: Row(
+                  children: ColorManager.notesColors
+                      .map((e) => GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _colorIndex =
+                                    ColorManager.notesColors.indexOf(e);
+                              });
+                              print(_colorIndex);
+                            },
+                            child: Container(
+                              width: 60.w,
+                              height: 60,
+                              color: e,
+                              child: Visibility(
+                                  child: Icon(Icons.check),
+                                  visible: _colorIndex ==
+                                      ColorManager.notesColors.indexOf(e)),
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 8,
+            ),
           ],
         ),
       )),
@@ -95,12 +125,24 @@ class _MyHomePageState extends State<MyHomePage> {
           //clear fields
           _titleController.clear();
           _textController.clear();
-          context.showBanner('Data inserted');
+          context.showSnackBar('Data inserted');
           //notify user
           //update ui
         }
       },
     );
+  }
+
+  void _addNewNote() {
+    if (_key.currentState!.validate()) {
+      _saveNote(
+        Note(
+            noteColor: ColorManager.notesColors[_colorIndex].value,
+            noteTitle: _titleController.value.text,
+            noteText: _textController.value.text,
+            createdAt: DateTimeManager.getCurrentDateTime()),
+      );
+    }
   }
 }
 /*

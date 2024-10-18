@@ -1,32 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:s3e_sqlite/core/text_styles.dart';
 
 class NoteInput extends StatelessWidget {
   int maxLines;
-  TextEditingController controller;
-  String label;
+  final TextEditingController controller;
+  final String label;
+  final TextStyle textStyles;
 
   NoteInput(
       {this.maxLines = 10,
       required this.controller,
       required this.label,
+      required this.textStyles,
       super.key});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       minLines: 1,
+      style: textStyles,
       maxLines: maxLines,
       validator: (value) => value!.isEmpty ? 'This field is required' : null,
       controller: controller,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
-        enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Colors.blue, width: 2)),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-            borderSide: const BorderSide(color: Colors.green, width: 2)),
-        labelText: label,
+        hintText: label,
+        hintStyle: textStyles,
       ),
     );
   }

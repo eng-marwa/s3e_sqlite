@@ -38,6 +38,7 @@ class DbHelper {
   void _onUpgrade(Database db) {
     try {
       db.execute(Constant.upgradeNoteTableSql);
+      _onCreate(db);
     } on DatabaseException catch (e) {
       print(e.toString());
     }

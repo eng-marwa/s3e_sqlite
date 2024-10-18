@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:s3e_sqlite/core/color_manager.dart';
 
 extension ContextExtension on BuildContext {
   void showBanner(String message) {
@@ -13,5 +14,12 @@ extension ContextExtension on BuildContext {
     );
     messengerState.showMaterialBanner(
         MaterialBanner(content: Text(message), actions: const [Text('')]));
+  }
+
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(this).showSnackBar(SnackBar(
+      content: Text(message),
+      backgroundColor: ColorManager.primaryColor,
+    ));
   }
 }

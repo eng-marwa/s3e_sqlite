@@ -10,10 +10,6 @@ class DateTimeManager {
 
   static String toTimeAgo(String stringDate) {
     DateTime date = DateTime.parse(stringDate);
-    return timeAgo.format(date.subtract(Duration(
-        days: date.day,
-        seconds: date.second,
-        hours: date.hour,
-        minutes: date.minute)));
+    return timeAgo.format(date, allowFromNow: true);
   }
 }
